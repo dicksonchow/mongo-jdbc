@@ -10,7 +10,7 @@ import java.sql.Statement;
 
 public class First {
 
-	private static final String MONGODB_CONNECTION_URL = "mongodb://www.mcrobert.eu/exampledb";
+	private static final String MONGODB_CONNECTION_URL = "mongodb://localhost/exampledb";
 
 	static void print(String name, ResultSet res) throws SQLException {
 		System.out.println(name);
