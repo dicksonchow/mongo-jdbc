@@ -2,6 +2,19 @@
 Mongo JDBC Driver
 ===========
 
+This is a fork of http://github.com/erh/mongo-jdbc
+- Changed build to maven
+- added DatabaseMetaData and ResultSetMetaData
+- added further functionality to allow the driver to be used in Eclipse and squirrel-sql.
+- added a few more tests
+
+Check out the tests for examples of what the driver can currently perform.
+
+Known issues:
+- jsqlparser doesn't seem to parse SELECT * FROM 'tablename';
+
+Original README follows:
+
 __EXPERIMENTAL__
 
 This is an experimental JDBC driver for MongoDB.  It attempts to map some basic SQL to MongoDB syntax.  
