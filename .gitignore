@@ -6,3 +6,5 @@ testoutput
 bin
 .project
 .classpath
+target
+.settings
