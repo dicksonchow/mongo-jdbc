@@ -20,7 +20,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>ultimoamore</groupId>
+			<groupId>net.sourceforge</groupId>
 			<artifactId>jsqlparser</artifactId>
 			<version>0.6.3</version>
 		</dependency>
