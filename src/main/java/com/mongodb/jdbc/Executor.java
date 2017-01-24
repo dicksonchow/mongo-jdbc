@@ -21,6 +21,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
 import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
@@ -164,11 +165,10 @@ public class Executor {
 
         for (int i = 0; i < valueList.size(); i++) {
             o.put(in.getColumns().get(i).toString(), toConstant((Expression) valueList.get(i)));
-
         }
 
-        coll.insert(o);
-        return 1; // TODO - this is wrong
+        WriteResult result = coll.insert(o);
+        return result == null? 0 : result.getN();
     }
 
     int update(Update up) throws MongoSQLException {
@@ -186,8 +186,8 @@ public class Executor {
         DBObject mod = new BasicDBObject("$set", set);
 
         DBCollection coll = getCollection(up.getTable());
-        coll.update(query, mod);
-        return 1; // TODO
+        WriteResult result = coll.update(query, mod);
+        return result == null? 0 : result.getN();
     }
 
     int drop(Drop d) {

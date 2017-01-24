@@ -171,8 +171,7 @@ public class MongoStatement implements Statement {
     // ---- reads -----
 
     @Override
-    public ResultSet executeQuery(String sql)
-            throws SQLException {
+    public ResultSet executeQuery(String sql) throws SQLException {
         // TODO
         // handle max rows
 
