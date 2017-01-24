@@ -18,288 +18,227 @@
 
 package com.mongodb.jdbc;
 
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.CallableStatement;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.NClob;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Savepoint;
-import java.sql.Statement;
-import java.sql.Struct;
-import java.util.Map;
-import java.util.Properties;
+import java.sql.*;
+import java.util.*;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 
 public class MongoConnection implements Connection {
 
-	private DB db;
-	private Properties clientInfo;
-	private boolean readOnly = false;
-	private DatabaseMetaData databaseMetaData = null;
-	private MongoConnectionInfo connectionInfo = new MongoConnectionInfo();
+    public MongoConnection( DB db ){
+        _db = db;
+    }
 
-	public MongoConnection(DB db) {
-		this.db = db;
-		// TODO proper initialisation of the connection info
-		connectionInfo.setMajorVersion("" + Mongo.MAJOR_VERSION);
-		connectionInfo.setMinorVersion("" + Mongo.MINOR_VERSION);
-		connectionInfo.setDatabase(db.getName());
-	}
+    public SQLWarning getWarnings(){
+        throw new RuntimeException( "should do get last error" );
+    }
 
-	public SQLWarning getWarnings() throws SQLException {
-		if (isClosed()) {
-			throw new MongoSQLException("connection is closed");
-		}
-		String err = (String) db.getLastError().get("err");
-		if (null != err) {
-			return new SQLWarning(db.getLastError().toString());
-		}
-		return null;
-	}
+    public void clearWarnings(){
+        throw new RuntimeException( "should reset error" );
+    }
 
-	public void clearWarnings() {
-		if (!isClosed()) {
-			db.resetError();
-		}
-	}
+    // ---- state -----
+    
+    public void close(){
+        _db = null;
+    }
 
-	// ---- state -----
+    public boolean isClosed(){
+        return _db == null;
+    }
 
-	public void close() {
-		db = null;
-	}
+    // --- commit ----
 
-	public boolean isClosed() {
-		return db == null;
-	}
+    public void commit(){
+        // NO-OP
+    }
 
-	// --- commit ----
+    public boolean getAutoCommit(){
+        return true;
+    }
 
-	public void commit() {
-		// NO-OP
-	}
+    public void rollback(){
+        throw new RuntimeException( "can't rollback" );
+    }
+    
+    public void rollback(Savepoint savepoint){
+        throw new RuntimeException( "can't rollback" );
+    }
 
-	public boolean getAutoCommit() {
-		return true;
-	}
+    public void setAutoCommit(boolean autoCommit){
+        if ( ! autoCommit )
+            throw new RuntimeException( "autoCommit has to be on" );
+    }
+    
+    public void releaseSavepoint(Savepoint savepoint){
+        throw new RuntimeException( "no savepoints" );
+    }
+    
+    public Savepoint setSavepoint(){
+        throw new RuntimeException( "no savepoints" );
+    }
 
-	public void rollback() {
-		throw new MongoRuntimeException("can't rollback");
-	}
+    public Savepoint setSavepoint(String name){
+        throw new RuntimeException( "no savepoints" );
+    }
 
-	public void rollback(Savepoint savepoint) {
-		throw new MongoRuntimeException("can't rollback");
-	}
+    public void setTransactionIsolation(int level){
+        throw new RuntimeException( "no TransactionIsolation" );
+    }
 
-	public void setAutoCommit(boolean autoCommit) {
-		if (!autoCommit) {
-			throw new MongoRuntimeException("autoCommit has to be on");
-		}
-	}
+    // --- create ----
 
-	public void releaseSavepoint(Savepoint savepoint) {
-		throw new MongoRuntimeException("no savepoints");
-	}
+    public Array createArrayOf(String typeName, Object[] elements){
+        throw new RuntimeException( "no create*" );
+    }
+    public Struct createStruct(String typeName, Object[] attributes){
+        throw new RuntimeException( "no create*" );
+    }
+    public Blob createBlob(){
+        throw new RuntimeException( "no create*" );
+    }
+    public Clob createClob(){
+        throw new RuntimeException( "no create*" );
+    }
+    public NClob createNClob(){
+        throw new RuntimeException( "no create*" );
+    }
+    public SQLXML createSQLXML(){
+        throw new RuntimeException( "no create*" );
+    }
+    
+    // ------- meta data ----
 
-	public Savepoint setSavepoint() {
-		throw new MongoRuntimeException("no savepoints");
-	}
+    public String getCatalog(){
+        return null;
+    }
+    public void setCatalog(String catalog){
+        throw new RuntimeException( "can't set catalog" );
+    }
+    
+    public Properties getClientInfo(){
+        return _clientInfo;
+    }
+    public String getClientInfo(String name){
+        return (String)_clientInfo.get( name );
+    }
 
-	public Savepoint setSavepoint(String name) {
-		throw new MongoRuntimeException("no savepoints");
-	}
+    public void setClientInfo(String name, String value){
+        _clientInfo.put( name , value );
+    }
+    public void setClientInfo(Properties properties){
+        _clientInfo = properties;
+    }
 
-	public void setTransactionIsolation(int level) {
-		throw new MongoRuntimeException("no TransactionIsolation");
-	}
 
-	// --- create ----
+    public int getHoldability(){
+        return ResultSet.HOLD_CURSORS_OVER_COMMIT;
+    }
+    public void setHoldability(int holdability){
+    }
 
-	public Array createArrayOf(String typeName, Object[] elements) {
-		throw new MongoRuntimeException("no create*");
-	}
+    public int getTransactionIsolation(){
+        throw new RuntimeException( "not dont yet" );
+    }
+    
+    public DatabaseMetaData getMetaData(){
+        throw new RuntimeException( "not dont yet" );
+    }
 
-	public Struct createStruct(String typeName, Object[] attributes) {
-		throw new MongoRuntimeException("no create*");
-	}
+    public boolean isValid(int timeout){
+        return _db != null;
+    }
 
-	public Blob createBlob() {
-		throw new MongoRuntimeException("no create*");
-	}
+    public boolean isReadOnly(){
+        return false;
+    }
+    
+    public void setReadOnly(boolean readOnly){
+        if ( readOnly )
+            throw new RuntimeException( "no read only mode" );
+    }
 
-	public Clob createClob() {
-		throw new MongoRuntimeException("no create*");
-	}
 
-	public NClob createNClob() {
-		throw new MongoRuntimeException("no create*");
-	}
+    public Map<String,Class<?>> getTypeMap(){
+        throw new RuntimeException( "not done yet" );
+    }
+    public void setTypeMap(Map<String,Class<?>> map){
+        throw new RuntimeException( "not done yet" );
+    }
+    
+    // ---- Statement -----
+    
+    public Statement createStatement(){
+        return createStatement( 0 , 0 , 0 );
+    }
+    public Statement createStatement(int resultSetType, int resultSetConcurrency){
+        return createStatement( resultSetType , resultSetConcurrency, 0 );
+    }
+    public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability){
+        return new MongoStatement( this , resultSetType , resultSetConcurrency , resultSetHoldability );
+    }
+    
+    // --- CallableStatement
 
-	public SQLXML createSQLXML() {
-		throw new MongoRuntimeException("no create*");
-	}
 
-	// ------- meta data ----
+    public CallableStatement prepareCall(String sql){
+        return prepareCall( sql , 0 , 0 , 0 );
+    }
+    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency){
+        return prepareCall( sql , resultSetType , resultSetConcurrency , 0 );
+    }
+    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability){
+        throw new RuntimeException( "CallableStatement not supported" );
+    }
 
-	public String getCatalog() {
-		return null;
-	}
+    // ---- PreparedStatement 
+    public PreparedStatement prepareStatement(String sql)
+        throws SQLException {
+        return prepareStatement( sql , 0 , 0 , 0 );
+    }
+    public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys){
+        throw new RuntimeException( "no PreparedStatement yet" );
+    }
+    public PreparedStatement prepareStatement(String sql, int[] columnIndexes){
+        throw new RuntimeException( "no PreparedStatement yet" );
+    }
+    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency)
+        throws SQLException {
+        return prepareStatement( sql , resultSetType , resultSetConcurrency , 0 );
+    }
+    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+        throws SQLException {
+        return new MongoPreparedStatement( this , resultSetType , resultSetConcurrency , resultSetHoldability , sql );
+    }
+    public PreparedStatement prepareStatement(String sql, String[] columnNames){
+        throw new RuntimeException( "no PreparedStatement yet" );
+    }
 
-	public void setCatalog(String catalog) {
-		throw new MongoRuntimeException("can't set catalog");
-	}
 
-	public Properties getClientInfo() {
-		return clientInfo;
-	}
+    // ---- random ----
 
-	public String getClientInfo(String name) {
-		return (String) clientInfo.get(name);
-	}
+    public String nativeSQL(String sql){
+        return sql;
+    }
 
-	public void setClientInfo(String name, String value) {
-		clientInfo.put(name, value);
-	}
+    public <T> T unwrap(Class<T> iface)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
 
-	public void setClientInfo(Properties properties) {
-		clientInfo = properties;
-	}
+    public boolean isWrapperFor(Class<?> iface)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
 
-	public int getHoldability() {
-		return ResultSet.HOLD_CURSORS_OVER_COMMIT;
-	}
+    public DB getDB(){
+        return _db;
+    }
 
-	public void setHoldability(int holdability) {
-	}
-
-	public int getTransactionIsolation() {
-		return TRANSACTION_NONE;
-		//throw new MongoRuntimeException("not done yet");
-	}
-
-	public DatabaseMetaData getMetaData() {
-		if (null == databaseMetaData) {
-			databaseMetaData = new MongoDatabaseMetaData(this);
-		}
-		return databaseMetaData;
-	}
-
-	public boolean isValid(int timeout) {
-		return db != null;
-	}
-
-	public boolean isReadOnly() {
-		return readOnly;
-	}
-
-	public void setReadOnly(boolean readOnly) {
-		this.readOnly = readOnly;
-		db.setReadOnly(readOnly);
-	}
-
-	public Map<String, Class<?>> getTypeMap() {
-		throw new MongoRuntimeException("not done yet");
-	}
-
-	public void setTypeMap(Map<String, Class<?>> map) {
-		throw new MongoRuntimeException("not done yet");
-	}
-
-	// ---- Statement -----
-
-	public Statement createStatement() {
-		return createStatement(0, 0, 0);
-	}
-
-	public Statement createStatement(int resultSetType, int resultSetConcurrency) {
-		return createStatement(resultSetType, resultSetConcurrency, 0);
-	}
-
-	public Statement createStatement(int resultSetType,
-			int resultSetConcurrency, int resultSetHoldability) {
-		return new MongoStatement(this, resultSetType, resultSetConcurrency,
-				resultSetHoldability);
-	}
-
-	// --- CallableStatement
-
-	public CallableStatement prepareCall(String sql) {
-		return prepareCall(sql, 0, 0, 0);
-	}
-
-	public CallableStatement prepareCall(String sql, int resultSetType,
-			int resultSetConcurrency) {
-		return prepareCall(sql, resultSetType, resultSetConcurrency, 0);
-	}
-
-	public CallableStatement prepareCall(String sql, int resultSetType,
-			int resultSetConcurrency, int resultSetHoldability) {
-		throw new MongoRuntimeException("CallableStatement not supported");
-	}
-
-	// ---- PreparedStatement
-	public PreparedStatement prepareStatement(String sql) throws SQLException {
-		return prepareStatement(sql, 0, 0, 0);
-	}
-
-	public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) {
-		throw new MongoRuntimeException("no PreparedStatement yet");
-	}
-
-	public PreparedStatement prepareStatement(String sql, int[] columnIndexes) {
-		throw new MongoRuntimeException("no PreparedStatement yet");
-	}
-
-	public PreparedStatement prepareStatement(String sql, int resultSetType,
-			int resultSetConcurrency) throws SQLException {
-		return prepareStatement(sql, resultSetType, resultSetConcurrency, 0);
-	}
-
-	public PreparedStatement prepareStatement(String sql, int resultSetType,
-			int resultSetConcurrency, int resultSetHoldability)
-			throws SQLException {
-		return new MongoPreparedStatement(this, resultSetType,
-				resultSetConcurrency, resultSetHoldability, sql);
-	}
-
-	public PreparedStatement prepareStatement(String sql, String[] columnNames) {
-		throw new MongoRuntimeException("no PreparedStatement yet");
-	}
-
-	// ---- random ----
-
-	public String nativeSQL(String sql) {
-		return sql;
-	}
-
-	public <T> T unwrap(Class<T> iface) throws SQLException {
-		throw new MongoUnsupportedOperationException();
-	}
-
-	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		throw new MongoUnsupportedOperationException();
-	}
-
-	public DBCollection getCollection(String name) {
-		return db.getCollection(name);
-	}
-
-	public DB getDb() {
-		return db;
-	}
-
-	public MongoConnectionInfo getConnectionInfo() {
-		return connectionInfo;
-	}
-
+    public DBCollection getCollection( String name ){
+        return _db.getCollection( name );
+    }
+    
+    DB _db;
+    Properties _clientInfo;
 }

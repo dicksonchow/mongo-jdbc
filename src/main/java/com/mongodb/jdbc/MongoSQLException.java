@@ -18,34 +18,16 @@
 
 package com.mongodb.jdbc;
 
-import java.sql.SQLException;
+import java.sql.*;
 
 public class MongoSQLException extends SQLException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8674250158753696907L;
-
-	public MongoSQLException(String msg) {
-		super(msg);
-	}
-
-	public MongoSQLException(String msg, Throwable e) {
-		super(msg, e);
-	}
-
-	public MongoSQLException(Throwable e) {
-		super(e);
-	}
-
-	public static class BadSQL extends MongoSQLException {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -7255861717450358822L;
-
-		BadSQL(String sql) {
-			super("bad sql: " + sql);
-		}
-	}
+    public MongoSQLException( String msg ){
+        super( msg );
+    }
+    
+    public static class BadSQL extends MongoSQLException {
+        BadSQL( String sql ){
+            super( "bad sql: " + sql );
+        }
+    }
 }
