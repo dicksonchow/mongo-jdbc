@@ -18,6 +18,8 @@ package com.mongodb.jdbc;
 
 import com.mongodb.DBAddress;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+import com.mongodb.ServerAddress;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -40,6 +42,7 @@ public class MongoDriver implements Driver {
     }
 
     public MongoDriver() {
+        super();
     }
 
     @Override
@@ -59,7 +62,8 @@ public class MongoDriver implements Driver {
             throw new MongoSQLException("bad url: " + url);
 
         try {
-            return new MongoConnection(Mongo.connect(new DBAddress(url)));
+            DBAddress addr = new DBAddress(url);
+            return new MongoConnection(new MongoClient(addr).getDB(addr.getDBName()));
         } catch (java.net.UnknownHostException uh) {
             throw new MongoSQLException("bad url: " + uh);
         }
