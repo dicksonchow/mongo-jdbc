@@ -2,25 +2,28 @@
 
 package com.mongodb.jdbc;
 
-import java.sql.*;
+import org.junit.Test;
 
-import org.testng.annotations.Test;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
-public class DriverTest extends com.mongodb.util.TestCase {
+import static org.junit.Assert.assertNull;
+
+public class DriverTest extends Base {
+
     @Test
-    public void test1()
-        throws Exception {
+    public void test1() throws Exception {
 
         Connection c = null;
         try {
-            c = DriverManager.getConnection( "mongodb://localhost/test" );
+            c = DriverManager.getConnection("mongodb://localhost/test");
+        } catch (Exception e) {
         }
-        catch ( Exception e ){}
 
-        assertNull( c );
+        assertNull(c);
 
         MongoDriver.install();
-        c = DriverManager.getConnection( "mongodb://localhost/test" );
-    } 
+        c = DriverManager.getConnection("mongodb://localhost/test");
+    }
 
 }
