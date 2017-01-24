@@ -324,7 +324,7 @@ public class MongoPreparedStatement extends MongoStatement implements PreparedSt
         _setnotdone();
     }
 
-    @Override
+    @Override @Deprecated
     public void setUnicodeStream(int idx, InputStream x, int length) {
         _setnotdone();
     }

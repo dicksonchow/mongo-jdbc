@@ -619,7 +619,7 @@ public class MongoResultSet implements ResultSet {
         return getBigDecimal(_find(columnIndex));
     }
 
-    @Override
+    @Override @Deprecated
     public BigDecimal getBigDecimal(int columnIndex, int scale) {
         return getBigDecimal(_find(columnIndex), scale);
     }
@@ -629,7 +629,7 @@ public class MongoResultSet implements ResultSet {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public BigDecimal getBigDecimal(String columnName, int scale) {
         throw new UnsupportedOperationException();
     }
@@ -885,12 +885,12 @@ public class MongoResultSet implements ResultSet {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    @Override @Deprecated
     public InputStream getUnicodeStream(int columnIndex) {
         return getUnicodeStream(_find(columnIndex));
     }
 
-    @Override
+    @Override @Deprecated
     public InputStream getUnicodeStream(String columnName) {
         throw new UnsupportedOperationException();
     }
