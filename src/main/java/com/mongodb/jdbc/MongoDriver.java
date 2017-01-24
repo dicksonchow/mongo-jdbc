@@ -23,21 +23,32 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class MongoDriver implements Driver {
 
     static final String PREFIX = "mongodb://";
 
+    static {
+        try {
+            DriverManager.registerDriver(new MongoDriver());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public MongoDriver() {
     }
 
+    @Override
     public boolean acceptsURL(String url) {
         return url.startsWith(PREFIX);
     }
 
-    public Connection connect(String url, Properties info)
-            throws SQLException {
+    @Override
+    public Connection connect(String url, Properties info) throws SQLException {
         if (info != null && info.size() > 0)
             throw new UnsupportedOperationException("properties not supported yet");
 
@@ -49,36 +60,33 @@ public class MongoDriver implements Driver {
 
         try {
             return new MongoConnection(Mongo.connect(new DBAddress(url)));
-        } catch ( java.net.UnknownHostException uh ){
-            throw new MongoSQLException( "bad url: " + uh );
+        } catch (java.net.UnknownHostException uh) {
+            throw new MongoSQLException("bad url: " + uh);
         }
     }
 
+    @Override
     public int getMajorVersion() {
         return 1;
     }
 
+    @Override
     public int getMinorVersion() {
         return 0;
     }
 
+    @Override
     public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) {
         throw new UnsupportedOperationException("getPropertyInfo doesn't work yet");
     }
 
+    @Override
     public boolean jdbcCompliant() {
         return false;
     }
 
-    public static void install() {
-        // NO-OP, handled in static
-    }
-
-    static {
-        try {
-            DriverManager.registerDriver(new MongoDriver());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return null;
     }
 }

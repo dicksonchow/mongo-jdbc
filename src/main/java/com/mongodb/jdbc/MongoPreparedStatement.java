@@ -31,6 +31,7 @@ import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.RowId;
+import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -40,108 +41,317 @@ import java.util.List;
 
 public class MongoPreparedStatement extends MongoStatement implements PreparedStatement {
 
-    MongoPreparedStatement( MongoConnection conn , int type, int concurrency, int holdability , String sql )
-        throws MongoSQLException {
-        super( conn , type , concurrency , holdability );
+    MongoPreparedStatement(MongoConnection conn, int type, int concurrency, int holdability, String sql)
+            throws MongoSQLException {
+        super(conn, type, concurrency, holdability);
         _sql = sql;
-        _exec = new Executor( conn._db , sql );
+        _exec = new Executor(conn._db, sql);
     }
 
-    public void addBatch(){
-        throw new UnsupportedOperationException( "batch stuff not supported" );
+    private final String _sql;
+    private final Executor _exec;
+    private List _params = new ArrayList();
+
+    @Override
+    public void addBatch() {
+        throw new UnsupportedOperationException("batch stuff not supported");
     }
-    
+
     // --- metadata ---
 
-    public ResultSetMetaData getMetaData(){
-        throw new UnsupportedOperationException();
-    }
-    public ParameterMetaData getParameterMetaData(){
+    @Override
+    public ResultSetMetaData getMetaData() {
         throw new UnsupportedOperationException();
     }
 
-    public void clearParameters(){
+    @Override
+    public ParameterMetaData getParameterMetaData() {
         throw new UnsupportedOperationException();
     }
-    
+
+    @Override
+    public void clearParameters() {
+        throw new UnsupportedOperationException();
+    }
+
     // ----- actually do
-    
-    public boolean execute(){
-        throw new RuntimeException( "execute not done" );
+
+    @Override
+    public boolean execute() {
+        throw new RuntimeException("execute not done");
     }
-    
-    public ResultSet executeQuery(){
-        throw new RuntimeException( "executeQuery not done" );
+
+    @Override
+    public ResultSet executeQuery() {
+        throw new RuntimeException("executeQuery not done");
     }
-    
-    public int executeUpdate()
-        throws MongoSQLException {
-        _exec.setParams( _params );
+
+    @Override
+    public int executeUpdate() throws MongoSQLException {
+        _exec.setParams(_params);
         return _exec.writeop();
     }
 
     // ---- setters -----
 
-    public void setArray(int idx, Array x){ _setnotdone(); }
-    public void setAsciiStream(int idx, InputStream x){ _setnotdone(); } 
-    public void setAsciiStream(int idx, InputStream x, int length){ _setnotdone(); } 
-    public void setAsciiStream(int idx, InputStream x, long length){ _setnotdone(); } 
-    public void setBigDecimal(int idx, BigDecimal x){ _setnotdone(); } 
-    public void setBinaryStream(int idx, InputStream x){ _setnotdone(); } 
-    public void setBinaryStream(int idx, InputStream x, int length){ _setnotdone(); } 
-    public void setBinaryStream(int idx, InputStream x, long length){ _setnotdone(); } 
-    public void setBlob(int idx, Blob x){ _setnotdone(); } 
-    public void setBlob(int idx, InputStream inputStream){ _setnotdone(); } 
-    public void setBlob(int idx, InputStream inputStream, long length){ _setnotdone(); } 
-    public void setBoolean(int idx, boolean x){ _setnotdone(); } 
-    public void setByte(int idx, byte x){ _setnotdone(); } 
-    public void setBytes(int idx, byte[] x){ _setnotdone(); } 
-    public void setCharacterStream(int idx, Reader reader){ _setnotdone(); } 
-    public void setCharacterStream(int idx, Reader reader, int length){ _setnotdone(); } 
-    public void setCharacterStream(int idx, Reader reader, long length){ _setnotdone(); } 
-    public void setClob(int idx, Clob x){ _setnotdone(); } 
-    public void setClob(int idx, Reader reader){ _setnotdone(); } 
-    public void setClob(int idx, Reader reader, long length){ _setnotdone(); } 
-    public void setDate(int idx, Date x){ _setnotdone(); } 
-    public void setDate(int idx, Date x, Calendar cal){ _setnotdone(); } 
-    public void setDouble(int idx, double x){ _setnotdone(); } 
-    public void setFloat(int idx, float x){ _setnotdone(); } 
-    public void setInt(int idx, int x){ _set( idx , x ); } 
-    public void setLong(int idx, long x){ _set( idx , x ); } 
-    public void setNCharacterStream(int idx, Reader value){ _setnotdone(); } 
-    public void setNCharacterStream(int idx, Reader value, long length){ _setnotdone(); } 
-    public void setNClob(int idx, NClob value){ _setnotdone(); } 
-    public void setNClob(int idx, Reader reader){ _setnotdone(); } 
-    public void setNClob(int idx, Reader reader, long length){ _setnotdone(); } 
-    public void setNString(int idx, String value){ _setnotdone(); } 
-    public void setNull(int idx, int sqlType){ _setnotdone(); } 
-    public void setNull(int idx, int sqlType, String typeName){ _setnotdone(); } 
-    public void setObject(int idx, Object x){ _set( idx , x ); }
-    public void setObject(int idx, Object x, int targetSqlType){ _setnotdone(); } 
-    public void setObject(int idx, Object x, int targetSqlType, int scaleOrLength){ _setnotdone(); } 
-    public void setRef(int idx, Ref x){ _setnotdone(); } 
-    public void setRowId(int idx, RowId x){ _setnotdone(); } 
-    public void setShort(int idx, short x){ _set( idx , x ); }
-    public void setSQLXML(int idx, SQLXML xmlObject){ _setnotdone(); } 
-    public void setString(int idx, String x){ _set( idx , x ); } 
-    public void setTime(int idx, Time x){ _setnotdone(); } 
-    public void setTime(int idx, Time x, Calendar cal){ _setnotdone(); } 
-    public void setTimestamp(int idx, Timestamp x){ _setnotdone(); } 
-    public void setTimestamp(int idx, Timestamp x, Calendar cal){ _setnotdone(); } 
-    public void setUnicodeStream(int idx, InputStream x, int length){ _setnotdone(); } 
-    public void setURL(int idx, URL x){ _setnotdone(); } 
+    @Override
+    public void setArray(int idx, Array x) {
+        _setnotdone();
+    }
 
-    void _setnotdone(){
-        throw new UnsupportedOperationException( "setter not done" );
+    @Override
+    public void setAsciiStream(int idx, InputStream x) {
+        _setnotdone();
     }
-    
-    void _set( int idx , Object o ){
-        while ( _params.size() <= idx )
-            _params.add( null );
-        _params.set( idx , o );
+
+    @Override
+    public void setAsciiStream(int idx, InputStream x, int length) {
+        _setnotdone();
     }
-    
-    final String _sql;
-    final Executor _exec;
-    List _params = new ArrayList();
+
+    @Override
+    public void setAsciiStream(int idx, InputStream x, long length) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setBigDecimal(int idx, BigDecimal x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setBinaryStream(int idx, InputStream x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setBinaryStream(int idx, InputStream x, int length) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setBinaryStream(int idx, InputStream x, long length) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setBlob(int idx, Blob x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setBlob(int idx, InputStream inputStream) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setBlob(int idx, InputStream inputStream, long length) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setBoolean(int idx, boolean x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setByte(int idx, byte x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setBytes(int idx, byte[] x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setCharacterStream(int idx, Reader reader) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setCharacterStream(int idx, Reader reader, int length) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setCharacterStream(int idx, Reader reader, long length) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setClob(int idx, Clob x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setClob(int idx, Reader reader) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setClob(int idx, Reader reader, long length) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setDate(int idx, Date x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setDate(int idx, Date x, Calendar cal) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setDouble(int idx, double x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setFloat(int idx, float x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setInt(int idx, int x) {
+        _set(idx, x);
+    }
+
+    @Override
+    public void setLong(int idx, long x) {
+        _set(idx, x);
+    }
+
+    @Override
+    public void setNCharacterStream(int idx, Reader value) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setNCharacterStream(int idx, Reader value, long length) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setNClob(int idx, NClob value) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setNClob(int idx, Reader reader) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setNClob(int idx, Reader reader, long length) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setNString(int idx, String value) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setNull(int idx, int sqlType) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setNull(int idx, int sqlType, String typeName) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setObject(int idx, Object x) {
+        _set(idx, x);
+    }
+
+    @Override
+    public void setObject(int idx, Object x, int targetSqlType) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setObject(int idx, Object x, int targetSqlType, int scaleOrLength) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setRef(int idx, Ref x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setRowId(int idx, RowId x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setShort(int idx, short x) {
+        _set(idx, x);
+    }
+
+    @Override
+    public void setSQLXML(int idx, SQLXML xmlObject) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setString(int idx, String x) {
+        _set(idx, x);
+    }
+
+    @Override
+    public void setTime(int idx, Time x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setTime(int idx, Time x, Calendar cal) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setTimestamp(int idx, Timestamp x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setTimestamp(int idx, Timestamp x, Calendar cal) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setUnicodeStream(int idx, InputStream x, int length) {
+        _setnotdone();
+    }
+
+    @Override
+    public void setURL(int idx, URL x) {
+        _setnotdone();
+    }
+
+    @Override
+    public void closeOnCompletion() throws SQLException {
+
+    }
+
+    @Override
+    public boolean isCloseOnCompletion() throws SQLException {
+        return false;
+    }
+
+    private void _setnotdone() {
+        throw new UnsupportedOperationException("setter not done");
+    }
+
+    private void _set(int idx, Object o) {
+        while (_params.size() <= idx) {
+            _params.add(null);
+        }
+        _params.set(idx, o);
+    }
 }

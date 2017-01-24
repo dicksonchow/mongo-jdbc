@@ -17,9 +17,6 @@ public class DriverTest extends Base {
         }
 
         assertNull(c);
-
-        MongoDriver.install();
-        c = DriverManager.getConnection("mongodb://localhost/test");
     }
 
 }

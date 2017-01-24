@@ -35,6 +35,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 public class MongoConnection implements Connection {
 
@@ -45,216 +46,287 @@ public class MongoConnection implements Connection {
     DB _db;
     private Properties _clientInfo;
 
+    @Override
     public SQLWarning getWarnings() {
         throw new RuntimeException("should do get last error");
     }
 
+    @Override
     public void clearWarnings() {
         throw new RuntimeException("should reset error");
     }
 
     // ---- state -----
 
+    @Override
     public void close() {
         _db = null;
     }
 
+    @Override
     public boolean isClosed() {
         return _db == null;
     }
 
     // --- commit ----
 
+    @Override
     public void commit() {
         // NO-OP
     }
 
+    @Override
     public boolean getAutoCommit() {
         return true;
     }
 
+    @Override
     public void rollback() {
         throw new RuntimeException("can't rollback");
     }
 
+    @Override
     public void rollback(Savepoint savepoint) {
         throw new RuntimeException("can't rollback");
     }
 
+    @Override
     public void setAutoCommit(boolean autoCommit) {
         if (!autoCommit)
             throw new RuntimeException("autoCommit has to be on");
     }
 
+    @Override
     public void releaseSavepoint(Savepoint savepoint) {
         throw new RuntimeException("no savepoints");
     }
 
+    @Override
     public Savepoint setSavepoint() {
         throw new RuntimeException("no savepoints");
     }
 
+    @Override
     public Savepoint setSavepoint(String name) {
         throw new RuntimeException("no savepoints");
     }
 
+    @Override
     public void setTransactionIsolation(int level) {
         throw new RuntimeException("no TransactionIsolation");
     }
 
     // --- create ----
 
+    @Override
     public Array createArrayOf(String typeName, Object[] elements) {
         throw new RuntimeException("no create*");
     }
 
+    @Override
     public Struct createStruct(String typeName, Object[] attributes) {
         throw new RuntimeException("no create*");
     }
 
+    @Override
     public Blob createBlob() {
         throw new RuntimeException("no create*");
     }
 
+    @Override
     public Clob createClob() {
         throw new RuntimeException("no create*");
     }
 
+    @Override
     public NClob createNClob() {
         throw new RuntimeException("no create*");
     }
 
+    @Override
     public SQLXML createSQLXML() {
         throw new RuntimeException("no create*");
     }
 
     // ------- meta data ----
 
+    @Override
     public String getCatalog() {
         return null;
     }
 
+    @Override
     public void setCatalog(String catalog) {
         throw new RuntimeException("can't set catalog");
     }
 
+    @Override
     public Properties getClientInfo() {
         return _clientInfo;
     }
 
+    @Override
     public String getClientInfo(String name) {
         return (String) _clientInfo.get(name);
     }
 
+    @Override
     public void setClientInfo(String name, String value) {
         _clientInfo.put(name, value);
     }
 
+    @Override
     public void setClientInfo(Properties properties) {
         _clientInfo = properties;
     }
 
-
+    @Override
     public int getHoldability() {
         return ResultSet.HOLD_CURSORS_OVER_COMMIT;
     }
 
+    @Override
     public void setHoldability(int holdability) {
     }
 
+    @Override
     public int getTransactionIsolation() {
         throw new RuntimeException("not dont yet");
     }
 
+    @Override
     public DatabaseMetaData getMetaData() {
         throw new RuntimeException("not dont yet");
     }
 
+    @Override
     public boolean isValid(int timeout) {
         return _db != null;
     }
 
+    @Override
     public boolean isReadOnly() {
         return false;
     }
 
+    @Override
     public void setReadOnly(boolean readOnly) {
         if (readOnly)
             throw new RuntimeException("no read only mode");
     }
 
+    @Override
     public Map<String, Class<?>> getTypeMap() {
         throw new RuntimeException("not done yet");
     }
 
+    @Override
     public void setTypeMap(Map<String, Class<?>> map) {
         throw new RuntimeException("not done yet");
     }
 
+    @Override
+    public void setSchema(String schema) throws SQLException {
+
+    }
+
+    @Override
+    public String getSchema() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public void abort(java.util.concurrent.Executor executor) throws SQLException {
+
+    }
+
+    @Override
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+
+    }
+
+    @Override
+    public int getNetworkTimeout() throws SQLException {
+        return 0;
+    }
+
     // ---- Statement -----
 
+    @Override
     public Statement createStatement() {
         return createStatement(0, 0, 0);
     }
 
+    @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency) {
         return createStatement(resultSetType, resultSetConcurrency, 0);
     }
 
+    @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
         return new MongoStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
     // --- CallableStatement
 
-
+    @Override
     public CallableStatement prepareCall(String sql) {
         return prepareCall(sql, 0, 0, 0);
     }
 
+    @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) {
         return prepareCall(sql, resultSetType, resultSetConcurrency, 0);
     }
 
+    @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
         throw new RuntimeException("CallableStatement not supported");
     }
 
     // ---- PreparedStatement
 
+    @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
         return prepareStatement(sql, 0, 0, 0);
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) {
         throw new RuntimeException("no PreparedStatement yet");
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, int[] columnIndexes) {
         throw new RuntimeException("no PreparedStatement yet");
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency)
             throws SQLException {
         return prepareStatement(sql, resultSetType, resultSetConcurrency, 0);
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType,
                                               int resultSetConcurrency, int resultSetHoldability)
             throws SQLException {
         return new MongoPreparedStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability, sql);
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, String[] columnNames) {
         throw new RuntimeException("no PreparedStatement yet");
     }
 
     // ---- wrapper ----
 
+    @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isWrapperFor(Class<?> iface)
             throws SQLException {
         throw new UnsupportedOperationException();
@@ -262,11 +334,12 @@ public class MongoConnection implements Connection {
 
     // ---- getter ----
 
+    @Override
     public String nativeSQL(String sql) {
         return sql;
     }
 
-    public DBCollection getCollection(String name){
+    public DBCollection getCollection(String name) {
         return _db.getCollection(name);
     }
 
