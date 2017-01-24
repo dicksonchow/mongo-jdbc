@@ -29,16 +29,19 @@
     <scm><url>https://github.com/copperoxide/mongo-jdbc</url></scm>
 
     <dependencies>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.13</version>
         </dependency>
+
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>2.14.3</version>
+            <version>3.4.1</version>
         </dependency>
+
         <dependency>
             <groupId>net.sf.jsqlparser</groupId>
             <artifactId>jsqlparser</artifactId>
@@ -46,6 +49,7 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -53,6 +57,7 @@
             <type>jar</type>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
 </project>

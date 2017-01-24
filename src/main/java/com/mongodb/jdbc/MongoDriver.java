@@ -61,12 +61,9 @@ public class MongoDriver implements Driver {
         if (!url.contains("/"))
             throw new MongoSQLException("bad url: " + url);
 
-        try {
-            DBAddress addr = new DBAddress(url);
-            return new MongoConnection(new MongoClient(addr).getDB(addr.getDBName()));
-        } catch (java.net.UnknownHostException uh) {
-            throw new MongoSQLException("bad url: " + uh);
-        }
+
+        DBAddress addr = new DBAddress(url);
+        return new MongoConnection(new MongoClient(addr).getDB(addr.getDBName()));
     }
 
     @Override
