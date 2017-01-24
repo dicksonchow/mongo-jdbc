@@ -4,3 +4,5 @@
 build
 testoutput
 target
+*.iml
+.idea
