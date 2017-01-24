@@ -92,6 +92,13 @@ public class Executor {
         if ( D ) System.out.println( "\t" + "query : " + query );
         DBCursor c = coll.find( query , fields );
         
+		// limit
+		Limit limit = ps.getLimit();
+		if (limit != null) {
+			c.limit((int) limit.getRowCount()).skip((int) limit.getOffset());
+
+		}
+        
         { // order by
             List orderBylist = ps.getOrderByElements();
             if ( orderBylist != null && orderBylist.size() > 0 ){

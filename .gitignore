@@ -3,6 +3,9 @@
 .DS_Store
 build
 testoutput
+bin
+.project
+.classpath
 target
 *.iml
 .idea

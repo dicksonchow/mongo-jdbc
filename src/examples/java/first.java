@@ -17,7 +17,7 @@ public class first {
         
         Class.forName( "com.mongodb.jdbc.MongoDriver" );
         
-        Connection c = DriverManager.getConnection( "mongodb://localhost/exampledb" );
+        Connection c = DriverManager.getConnection( "mongodb://10.241.14.41:12340/exampledb" );
 
         Statement stmt = c.createStatement();
         
@@ -33,7 +33,7 @@ public class first {
         // print
         print( "not sorted" , stmt.executeQuery( "select name , age from people " ) );
         print( "sorted by age" , stmt.executeQuery( "select name , age from people order by age " ) );
-        print( "sorted by age desc" , stmt.executeQuery( "select name , age from people order by age desc " ) );
+        print( "sorted by age desc" , stmt.executeQuery( "select name , age from people order by age desc limit 2,1" ) );
 
         // update
         stmt.executeUpdate( "update people set age=32 where name='jaime'" );
