@@ -51,8 +51,9 @@ public class First {
 
         String baseSQL = "SELECT name, age FROM people";
 
-        // print
+        // query
         print("not sorted", stmt.executeQuery(baseSQL));
+        print("where", stmt.executeQuery(baseSQL + " WHERE name = 'Eliot'"));
         print("sorted by age", stmt.executeQuery(baseSQL + " ORDER BY age"));
         print("sorted by age desc", stmt.executeQuery(baseSQL + " ORDER BY age DESC LIMIT 2,1"));
 

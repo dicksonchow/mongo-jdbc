@@ -12,7 +12,20 @@ This is an experimental JDBC driver for MongoDB.  It attempts to map some basic 
 
 ### Project Scope
 
-* support __SELECT__ on single table
-* support __WHERE__
+- [x] support __SELECT__ on single table
+- [x] support __WHERE__
+- [x] support __ORDER BY__ and __LIMIT__
+- [ ] upgrade Mongo Java Driver to 3.x
+
+### Build
+
+```
+$ mvn package -Dmaven.test.skip=true
+```
+
+Or, if you have a testing MongoDB instance running on localhost and listening to port 27017, you can
+```
+$ mvn package
+```
 
 License: Apache License, Version 2.0
