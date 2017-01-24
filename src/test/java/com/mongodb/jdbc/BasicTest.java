@@ -1,5 +1,3 @@
-// BasicTest.java
-
 package com.mongodb.jdbc;
 
 import com.mongodb.BasicDBObject;
@@ -7,9 +5,7 @@ import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
-
 
 public class BasicTest extends Base {
 

@@ -1,14 +1,10 @@
-// MongoResultSetTest.java
-
 package com.mongodb.jdbc;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCollection;
 import org.junit.Test;
-
 import static junit.framework.TestCase.*;
-
 
 public class MongoResultSetTest extends Base {
 
