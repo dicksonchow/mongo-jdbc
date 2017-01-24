@@ -42,22 +42,23 @@ public class First {
         Statement stmt = c.createStatement();
 
         // drop old table
-        stmt.executeUpdate("drop table people");
+        stmt.executeUpdate("DROP TABLE people");
 
         // insert some data
-        stmt.executeUpdate("insert into people ( name , age ) values ( 'eliot' , 30 )");
-        stmt.executeUpdate("insert into people ( name , age ) values ( 'sara' , 2 )");
-        stmt.executeUpdate("insert into people ( name , age ) values ( 'jaime' , 28 )");
+        stmt.executeUpdate("INSERT INTO people (name, age) VALUES ('Eliot' , 30)");
+        stmt.executeUpdate("INSERT INTO people (name, age) VALUES ('Sara'  , 12)");
+        stmt.executeUpdate("INSERT INTO people (name, age) VALUES ('Jaime' , 28)");
+
+        String baseSQL = "SELECT name, age FROM people";
 
         // print
-        print("not sorted", stmt.executeQuery("select addname , age from people "));
-        print("sorted by age", stmt.executeQuery("select name , age from people order by age "));
-        print("sorted by age desc", stmt.executeQuery("select name , age from people order by age desc limit 2,1"));
+        print("not sorted", stmt.executeQuery(baseSQL));
+        print("sorted by age", stmt.executeQuery(baseSQL + " ORDER BY age"));
+        print("sorted by age desc", stmt.executeQuery(baseSQL + " ORDER BY age DESC LIMIT 2,1"));
 
         // update
-        stmt.executeUpdate("update people set age=addtoset(32) where name='jaime'");
-        print("sorted by age desc", stmt.executeQuery("select name , age from people order by age desc "));
-
+        stmt.executeUpdate("UPDATE people SET age = 32 WHERE name = 'Jaime'");
+        print("after update", stmt.executeQuery(baseSQL + " ORDER BY age DESC"));
     }
 
 } 

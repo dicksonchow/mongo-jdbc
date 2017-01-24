@@ -39,6 +39,7 @@ import net.sf.jsqlparser.statement.drop.Drop;
 import net.sf.jsqlparser.statement.insert.Insert;
 import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.Limit;
+import net.sf.jsqlparser.statement.select.OrderByElement;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
@@ -71,8 +72,7 @@ public class Executor {
         _params = params;
     }
 
-    DBCursor query()
-            throws MongoSQLException {
+    DBCursor query() throws MongoSQLException {
         if (!(_statement instanceof Select))
             throw new IllegalArgumentException("not a query sql statement");
 
@@ -114,21 +114,20 @@ public class Executor {
         Limit limit = ps.getLimit();
         if (limit != null) {
             c.limit((int) limit.getRowCount()).skip((int) limit.getOffset());
+        }
 
-        }
-        /*
-        { // order by
-            List orderBylist = ps.getOrderByElements();
-            if (orderBylist != null && orderBylist.size() > 0) {
-                BasicDBObject order = new BasicDBObject();
-                for (int i = 0; i < orderBylist.size(); i++) {
-                    OrderByElement o = (OrderByElement) orderBylist.get(i);
-                    order.put(o.getColumnReference().toString(), o.isAsc() ? 1 : -1);
-                }
-                c.sort(order);
+        // order by
+        List orderBylist = ps.getOrderByElements();
+        if (orderBylist != null && orderBylist.size() > 0) {
+            BasicDBObject order = new BasicDBObject();
+            for (Object orderBy: orderBylist) {
+                OrderByElement o = (OrderByElement)orderBy;
+                Column col = (Column)o.getExpression();
+                order.put(col.getColumnName(), o.isAsc() ? 1 : -1);
             }
+            c.sort(order);
         }
-        */
+
         return c;
     }
 

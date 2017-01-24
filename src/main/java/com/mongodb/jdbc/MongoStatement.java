@@ -174,10 +174,11 @@ public class MongoStatement implements Statement {
     public ResultSet executeQuery(String sql) throws SQLException {
         // TODO
         // handle max rows
-
         DBCursor cursor = new Executor(_conn._db, sql).query();
+
         if (_fetchSize > 0)
             cursor.batchSize(_fetchSize);
+
         if (_maxRows > 0)
             cursor.limit(_maxRows);
 
