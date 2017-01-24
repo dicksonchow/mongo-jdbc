@@ -31,12 +31,12 @@ public class first {
         
 
         // print
-        print( "not sorted" , stmt.executeQuery( "select name , age from people " ) );
+        print( "not sorted" , stmt.executeQuery( "select addname , age from people " ) );
         print( "sorted by age" , stmt.executeQuery( "select name , age from people order by age " ) );
         print( "sorted by age desc" , stmt.executeQuery( "select name , age from people order by age desc limit 2,1" ) );
 
         // update
-        stmt.executeUpdate( "update people set age=32 where name='jaime'" );
+        stmt.executeUpdate( "update people set age=addtoset(32) where name='jaime'" );
         print( "sorted by age desc" , stmt.executeQuery( "select name , age from people order by age desc " ) );
 
     }

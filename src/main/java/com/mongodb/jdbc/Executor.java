@@ -201,6 +201,8 @@ public class Executor {
             return null;
         else if ( e instanceof JdbcParameter )
             return _params.get( _pos++ );
+        else if (e instanceof Function)
+        	return (Function)e;
                  
         throw new UnsupportedOperationException( "can't turn [" + e + "] " + e.getClass().getName() + " into constant " );
     }
