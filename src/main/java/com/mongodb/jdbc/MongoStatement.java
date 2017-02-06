@@ -17,11 +17,14 @@
 package com.mongodb.jdbc;
 
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class MongoStatement implements Statement {
 
@@ -174,13 +177,13 @@ public class MongoStatement implements Statement {
     public ResultSet executeQuery(String sql) throws SQLException {
         // TODO
         // handle max rows
-        DBCursor cursor = new Executor(_conn._db, sql).query();
+        ArrayList<DBObject> cursor = new Executor(_conn._db, sql).query();
 
-        if (_fetchSize > 0)
-            cursor.batchSize(_fetchSize);
-
-        if (_maxRows > 0)
-            cursor.limit(_maxRows);
+//        if (_fetchSize > 0)
+//            cursor.batchSize(_fetchSize);
+//
+//        if (_maxRows > 0)
+//            cursor.limit(_maxRows);
 
         _last = new MongoResultSet(cursor);
         return _last;

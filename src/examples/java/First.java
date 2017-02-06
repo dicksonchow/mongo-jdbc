@@ -28,8 +28,8 @@ public class First {
         System.out.println(name);
         while (res.next()) {
             System.out.println(
+                    "\t" + res.getString("firstname") +
                     "\t" + res.getString("email") +
-                    "\t" + res.getInt("age") +
                     "\t" + res.getObject(0)
             );
         }
@@ -39,7 +39,7 @@ public class First {
 
         Class.forName("com.mongodb.jdbc.MongoDriver");
 
-        Connection c = DriverManager.getConnection("jdbc:mongodb://127.0.0.1:27017,slave:27017/test");
+        Connection c = DriverManager.getConnection("jdbc:mongodb://mongodev01:27017,mongodev02:27017,mongodev03:27017/testdb");
 
         Statement stmt = c.createStatement();
 

@@ -20,6 +20,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -37,22 +38,33 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MongoResultSet implements ResultSet {
 
-    MongoResultSet(DBCursor cursor) {
-        _cursor = cursor;
-        _fields.init(cursor.getKeysWanted());
-    }
-
-    private final DBCursor _cursor;
+    private final List<DBObject> _cursor;
+    private final Iterator<DBObject> it;
     private final FieldLookup _fields = new FieldLookup();
     private DBObject _cur;
     private int _row = 0;
     private boolean _closed = false;
+
+    // Constructor of the MongoResultSet
+    MongoResultSet(List<DBObject> cursor) {
+        this._cursor = cursor;
+        this.it = this._cursor.iterator();
+        //_fields.init(cursor.getKeysWanted());
+    }
+
+    // moving throgh cursor
+    @Override
+    public boolean next() {
+        if (!this.it.hasNext()) {
+            return false;
+        }
+        _cur = (DBObject) this.it.next();
+        return true;
+    }
 
     @Override
     public void clearWarnings() {
@@ -1020,7 +1032,8 @@ public class MongoResultSet implements ResultSet {
 
     @Override
     public int findColumn(String columnName) {
-        return _fields.get(columnName);
+        return 0;
+        //return _fields.get(columnName);
     }
 
     // random stuff
@@ -1035,17 +1048,6 @@ public class MongoResultSet implements ResultSet {
         throw new UnsupportedOperationException();
     }
 
-    // moving throgh cursor
-
-    @Override
-    public boolean next() {
-        if (!_cursor.hasNext()) {
-            return false;
-        }
-        _cur = _cursor.next();
-        return true;
-    }
-
     private Number _getNumber(String n) {
         Number x = (Number) (_cur.get(n));
         if (x == null)
@@ -1054,7 +1056,8 @@ public class MongoResultSet implements ResultSet {
     }
 
     public String _find(int i) {
-        return _fields.get(i);
+        return "";
+        //return _fields.get(i);
     }
 
     class FieldLookup {

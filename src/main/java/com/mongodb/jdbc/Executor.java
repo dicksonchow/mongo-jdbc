@@ -37,16 +37,11 @@ import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.drop.Drop;
 import net.sf.jsqlparser.statement.insert.Insert;
-import net.sf.jsqlparser.statement.select.AllColumns;
-import net.sf.jsqlparser.statement.select.Limit;
-import net.sf.jsqlparser.statement.select.OrderByElement;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.Select;
-import net.sf.jsqlparser.statement.select.SelectExpressionItem;
-import net.sf.jsqlparser.statement.select.SelectItem;
+import net.sf.jsqlparser.statement.select.*;
 import net.sf.jsqlparser.statement.update.Update;
 import java.io.StringReader;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class Executor {
 
@@ -72,7 +67,10 @@ public class Executor {
         _params = params;
     }
 
-    DBCursor query() throws MongoSQLException {
+    public ArrayList<DBObject> query() throws MongoSQLException {
+        // Final ArrayList to return
+        ArrayList<DBObject> dbObjectsList = new ArrayList<>();
+
         if (!(_statement instanceof Select))
             throw new IllegalArgumentException("not a query sql statement");
 
@@ -108,12 +106,12 @@ public class Executor {
         if (D) System.out.println("\t" + "table: " + coll);
         if (D) System.out.println("\t" + "fields: " + fields);
         if (D) System.out.println("\t" + "query : " + query);
-        DBCursor c = coll.find(query, fields);
+        DBCursor dbCursor = coll.find(query, fields);
 
         // limit
         Limit limit = ps.getLimit();
         if (limit != null) {
-            c.limit((int) limit.getRowCount()).skip((int) limit.getOffset());
+            dbCursor.limit((int) limit.getRowCount()).skip((int) limit.getOffset());
         }
 
         // order by
@@ -125,10 +123,40 @@ public class Executor {
                 Column col = (Column)o.getExpression();
                 order.put(col.getColumnName(), o.isAsc() ? 1 : -1);
             }
-            c.sort(order);
+            System.out.println(order.toString());
+            dbCursor.sort(order);
         }
 
-        return c;
+        // distinct
+        Distinct distinct = ps.getDistinct();
+        // This blocks of code execute when there is a DISTINCT keyword
+        if (distinct != null) {
+            // List of SELECT items
+            List colList =  ps.getSelectItems();
+//            ArrayList<DBObject> temp_cur = new ArrayList<>();
+            HashMap<String, Integer> check_distinct = new HashMap<>();
+            for (Object cur: dbCursor){
+                DBObject obj = (DBObject) cur;
+                String hash_key = "";
+
+                for (Object col_name: colList) {
+                    hash_key += obj.get(col_name.toString());
+                }
+
+                if (!check_distinct.containsKey(hash_key)) {
+                    check_distinct.put(hash_key, 1);
+                    dbObjectsList.add(obj);
+                }
+            }
+
+            return dbObjectsList;
+        }
+
+        for (Object cur: dbCursor){
+            dbObjectsList.add((DBObject) cur);
+        }
+        System.out.println("Size to return: " + dbObjectsList.size());
+        return dbObjectsList;
     }
 
     int writeop() throws MongoSQLException {
